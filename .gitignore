@@ -1,0 +1,9 @@
+application.ts
+dist
+node_modules
+custom_build
+config
+src/utils/apps.json
+.env
+output.mp3
+response.mp3

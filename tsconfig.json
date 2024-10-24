@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "noEmit": false,
+    "typeRoots": [
+      "./src/@types",
+      "./node_modules/@types"
+    ],
+    "rootDir": "./",
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "./**/*.ts",
+    "./src/@types/**/*.d.ts"
+    // כולל את כל קבצי ה-d.ts שלך
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
