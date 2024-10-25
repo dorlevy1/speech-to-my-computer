@@ -3,6 +3,9 @@ import axios from "axios";
 import puppeteer from "puppeteer";
 import GPTHooks from "./GPTHooks";
 import {ChatGPTGoogleCredentialsType, ChatGPTThreadType, ChatGPTTRunType} from "../@types/ChatGPT";
+import ActionsProcessor from "../Strategies/ActionsProcessor";
+import NotepadStrategy from "../Strategies/NotepadStrategy";
+import {MessageEnum} from "../enums/ChatGPT/messageEnum";
 
 export default class ChatGPT {
 
@@ -10,6 +13,7 @@ export default class ChatGPT {
     private run: ChatGPTTRunType
     private readonly _hooks: GPTHooks
     private credentials: ChatGPTGoogleCredentialsType
+    private messages: { role: MessageEnum, content: string }[] = []
 
 
     constructor(openai: OpenAI) {
@@ -21,6 +25,7 @@ export default class ChatGPT {
             cx: process.env.GOOGLE_CX as string
         }
     }
+
     getHooks(): GPTHooks {
         return this._hooks
     }
@@ -38,17 +43,28 @@ export default class ChatGPT {
     }
 
 
+    getMessages() {
+        return this.messages
+    }
+
     async createThread() {
-        this.thread = await this._hooks.createThread()
+        this.thread = await this._hooks.createThread(this.messages)
         return this.thread
     }
 
     async createMessageThread(message: string) {
         if (this.thread) {
+            this.addTypeMessage(MessageEnum.USER, message)
             await this._hooks.createMessageThread(this.thread.id, message)
         }
     }
 
+    addTypeMessage(type: MessageEnum, message: string) {
+        this.messages.push({
+            role: type,
+            content: message
+        })
+    }
 
     async createRunThread(tools: []) {
         if (this.thread) {
@@ -56,7 +72,6 @@ export default class ChatGPT {
             return this.run
         }
     }
-
 
     async checkRunThreadStatus() {
         if (this.run) {
@@ -81,14 +96,13 @@ export default class ChatGPT {
     }
 
     private async handleCompletedRun() {
-        if (this.thread) {
-            let messages = await this._hooks.listMessage(this.thread.id);
-            if (messages.data[0].content && 'text' in messages.data[0].content?.[0]) {
-                return messages.data[0].content?.[0].text?.value;
-            }
-        } else {
-            console.log('No Data.');
+        if (!this.thread) return 'No Data'
+        let messages = await this._hooks.listMessage(this.thread.id);
+        if (messages.data[0].content && 'text' in messages.data[0].content?.[0]) {
+            this.addTypeMessage(MessageEnum.ASSISTANT, messages.data[0].content?.[0].text?.value)
+            return messages.data[0].content?.[0].text?.value;
         }
+        return 'No Data'
     }
 
     async requiresActions() {
@@ -116,6 +130,15 @@ export default class ChatGPT {
                                 output: "לא נמצאו תוצאות רלוונטיות."
                             };
                         }
+                        if (tool.function.name === "openNotepad") {
+                            const actions = new ActionsProcessor(new NotepadStrategy())
+                            const content = await this._hooks.translateText(JSON.parse(tool.function.arguments).content, 'Hebrew')
+                            await actions.process(content)
+                            return {
+                                tool_call_id: tool.id,
+                                output: "Notepad opened with provided content."
+                            };
+                        }
                         return null;
                     }
                 )
@@ -132,7 +155,6 @@ export default class ChatGPT {
             return this.checkRunThreadStatus();
         }
     }
-
 
     async getRelevantContent(websites: { title: string; link: string; }[] | string, content: string) {
 
@@ -182,7 +204,6 @@ export default class ChatGPT {
         }
     }
 
-
     async extractWebsiteContent(url: string): Promise<string> {
         try {
             const browser = await puppeteer.launch({headless: true});
@@ -198,7 +219,7 @@ export default class ChatGPT {
             });
 
             await browser.close();
-            console.log('dor')
+            console.log('moving to next site')
             return content || 'לא נמצא תוכן משמעותי באתר זה.';
         } catch (error) {
             console.error('Error occurred while extracting website content:', error);
@@ -231,7 +252,6 @@ export default class ChatGPT {
             return false;
         }
     }
-
 
     async summarizeContent(content: string, question: string): Promise<string> {
         try {

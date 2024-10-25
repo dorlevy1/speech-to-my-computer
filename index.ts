@@ -1,6 +1,4 @@
 import Listener from "./src/utils/Listener";
-import ActionsProcessor from "./src/Strategies/ActionsProcessor";
-import ApplicationStrategy from "./src/Strategies/ApplicationStrategy";
 import 'dotenv/config'
 import ChatGPT from "./src/utils/ChatGPT";
 import OpenAIClient from "./src/utils/OpenAIClient";
@@ -16,7 +14,7 @@ const speech = new Speech()
 async function listenAndRecognize() {
     try {
 
-        const actionsStrategy = new ActionsProcessor(new ApplicationStrategy())
+        // const actionsStrategy = new ActionsProcessor(new ApplicationStrategy())
 
         await listener.setProcess(processRecording)
 
@@ -25,11 +23,13 @@ async function listenAndRecognize() {
                 const transcript = await OpenAIHooks.translateText(await OpenAIHooks.transcribeAudio());
                 console.log(transcript)
                 console.log('Trigger word detected! Activating ChatGPT...');
-                await actionsStrategy.process(transcript)
-                const response = await askChatGPT(transcript);
+                // await actionsStrategy.process(transcript)
+                const response = await askChatGPT(transcript) as string;
                 if (response) {
                     await synthesizeSpeech(response);
                 }
+                console.log('done')
+                console.log(OpenAI.getMessages())
                 listener.setInProgress(false)
             } catch (err) {
                 listener.setInProgress(false)
@@ -58,7 +58,7 @@ async function askChatGPT(question: string) {
                 type: "function",
                 function: {
                     name: "searchGoogle",
-                    description: "This function performs a search on Google using the Custom Search API. It should be called whenever the user asks to search on Google, uses the words 'Google', 'search', or 'find on google'. The function fetches the correct answer from Google's Custom Search API.",
+                    description: "Performs a search on Google using the Custom Search API. Should be called when no answer is found in the internal knowledge base, provided instructions, or uploaded files. Should only be used as a fallback mechanism when all other resources have been exhausted.",
                     strict: true,
                     parameters: {
                         type: "object",
@@ -69,6 +69,24 @@ async function askChatGPT(question: string) {
                             query: {
                                 type: "string",
                                 description: "The search query string to be sent to the API"
+                            }
+                        },
+                        additionalProperties: false
+                    }
+                }
+            }, {
+                type: "function",
+                function: {
+                    name: "openNotepad",
+                    description: "Opens the Notepad editor and writes provided content. Should be called whenever the user asks to open an editor or make a note.",
+                    strict: true,
+                    parameters: {
+                        type: "object",
+                        required: ["content"],
+                        properties: {
+                            content: {
+                                type: "string",
+                                description: "The content that should be written in Notepad"
                             }
                         },
                         additionalProperties: false

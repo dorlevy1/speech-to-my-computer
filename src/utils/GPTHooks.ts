@@ -1,6 +1,7 @@
 import path from "node:path";
 import fs from "fs";
 import OpenAI from "openai";
+import {MessageEnum} from "../enums/ChatGPT/messageEnum";
 
 
 export default class GPTHooks {
@@ -12,12 +13,20 @@ export default class GPTHooks {
     }
 
     completions(data: { messages: object[], tools?: [] }) {
-        return this.openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
+        let bodyData: { messages: []; model: string } | { messages: []; model: string, tools: [] } = {
+            model: "gpt-4-turbo",
             messages: data.messages as [],
-            tools: data.tools || []
+        }
 
-        });
+        if (data.tools) {
+            bodyData = {
+                model: "gpt-4-turbo",
+                messages: data.messages as [],
+                tools: data.tools
+            }
+        }
+
+        return this.openai.chat.completions.create(bodyData);
     }
 
     submitToolOutputsAndPoll(threadID: string, runID: string, outputTools: { tool_call_id: string, output: string }[]) {
@@ -33,7 +42,10 @@ export default class GPTHooks {
     }
 
 
-    createThread() {
+    createThread(messages?: { role: MessageEnum; content: string }[]) {
+        if (messages && messages.length > 0) {
+            return this.openai.beta.threads.create({messages})
+        }
         return this.openai.beta.threads.create()
     }
 
@@ -49,7 +61,7 @@ export default class GPTHooks {
 
     createAndPoll(id: string, tools: any) {
         return this.openai.beta.threads.runs.createAndPoll(id, {
-                assistant_id: 'asst_OMAh3Zaz9IFVLTzH3nMkJo1X',
+                assistant_id: process.env.ASSISTANT_ID as string,
                 tools: tools
             },
         );
@@ -70,7 +82,6 @@ export default class GPTHooks {
 
     async translateText(text: string, targetLanguage: string = 'English'): Promise<string> {
         try {
-            console.log(text)
             const response = await this.completions({
                 messages: [
                     {role: 'system', content: `You are a translation assistant.`},
