@@ -97,6 +97,23 @@ export default class GPTHooks {
         }
     }
 
+    async translateAudio(): Promise<string> {
+        try {
+            const filePath = path.join(process.env.AUDIO_DIR as string, 'output.mp3'); // נתיב לקובץ ההקלטה
+
+            const response = await this.openai.audio.translations.create({
+                file: fs.createReadStream(filePath),
+                model: "whisper-1",
+            });
+
+            return response.text;
+
+        } catch (error) {
+            console.error('Error during translation:', error);
+            return 'Translation failed';
+        }
+    }
+
     transcriptions(filePath: string) {
         return this.openai.audio.transcriptions.create({
             model: 'whisper-1',
