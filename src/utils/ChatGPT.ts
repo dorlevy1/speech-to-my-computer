@@ -6,6 +6,7 @@ import {ChatGPTGoogleCredentialsType, ChatGPTThreadType, ChatGPTTRunType} from "
 import ActionsProcessor from "../Strategies/ActionsProcessor";
 import NotepadStrategy from "../Strategies/NotepadStrategy";
 import {MessageEnum} from "../enums/ChatGPT/messageEnum";
+import path from "node:path";
 
 export default class ChatGPT {
 
@@ -48,8 +49,11 @@ export default class ChatGPT {
     }
 
     async createThread() {
+        if (this.thread) {
+            console.log('Thread Already Exists, Continue')
+            return;
+        }
         this.thread = await this._hooks.createThread(this.messages)
-        return this.thread
     }
 
     async createMessageThread(message: string) {
@@ -67,6 +71,10 @@ export default class ChatGPT {
     }
 
     async createRunThread(tools: []) {
+        if (this.thread && this.run) {
+            console.log('Run Already exists')
+            return this.run
+        }
         if (this.thread) {
             this.run = await this._hooks.createAndPoll(this.thread.id, tools)
             return this.run
@@ -275,5 +283,21 @@ export default class ChatGPT {
             console.error('Error occurred during content summarization:', error);
             return 'אירעה שגיאה בעת הניסיון לסכם את התוכן.';
         }
+    }
+
+    async transcribeAudio() {
+        try {
+            const filePath = path.join(process.env.AUDIO_DIR as string, 'output.mp3'); // נתיב לקובץ ההקלטה
+
+            return await this._hooks.transcriptions(filePath);
+
+        } catch (err) {
+            console.error('Error occurred during transcription:', err);
+            return 'Error in transcription';
+        }
+    }
+
+    async speech() {
+        return this._hooks.speech(this.messages)
     }
 }

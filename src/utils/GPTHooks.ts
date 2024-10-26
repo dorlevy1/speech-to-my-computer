@@ -2,6 +2,8 @@ import path from "node:path";
 import fs from "fs";
 import OpenAI from "openai";
 import {MessageEnum} from "../enums/ChatGPT/messageEnum";
+import {readFileSync, writeFileSync} from "node:fs";
+import {exec} from "node:child_process";
 
 
 export default class GPTHooks {
@@ -50,6 +52,65 @@ export default class GPTHooks {
     }
 
 
+    async generateAudio() {
+        const filePath = path.join(process.env.AUDIO_DIR as string, 'output.mp3'); // נתיב לקובץ ההקלטה
+        const buffer = readFileSync(filePath)
+        const base64str = buffer.toString("base64");
+
+        const response = await this.openai.chat.completions.create({
+            model: "gpt-4o-audio-preview",
+            modalities: ["text", "audio"],
+            audio: {voice: "alloy", format: "wav"},
+            messages: [
+                {
+                    role: "user",
+                    content: [
+                        {type: "input_audio", input_audio: {data: base64str, format: "mp3"}}
+                    ]
+                }
+            ]
+        });
+        return response.choices[0].message.audio?.transcript || '';
+    }
+
+    async speech(messages: { role: MessageEnum; content: string }[]) {
+        try {
+            // Request to OpenAI for audio response
+            const response = await this.openai.chat.completions.create({
+                model: "gpt-4o-audio-preview",
+                modalities: ["text", "audio"],
+                audio: {voice: "alloy", format: "wav"},
+                messages: messages
+            });
+
+            console.log(response.choices[0]);
+
+            // Extract audio data from the response
+            const audioData = response?.choices?.[0]?.message?.audio?.data;
+
+            if (audioData) {
+                // Write the audio data to a file
+                const audioFilePath = path.join(process.env.AUDIO_DIR as string, 'response.mp3');
+                writeFileSync(audioFilePath, Buffer.from(audioData, 'base64'));
+
+                console.log('Response saved as response.mp3');
+
+                // Play the saved audio file using ffplay
+                exec(`ffplay -nodisp -autoexit "${audioFilePath}"`, (err) => {
+                    if (err) {
+                        console.error('Error playing audio with ffplay:', err);
+                        return;
+                    }
+                    console.log('Audio played successfully.');
+                });
+            } else {
+                console.error('No audio data found in the response.');
+            }
+        } catch (error) {
+            console.error('Error generating speech response:', error);
+        }
+    }
+
     async createMessageThread(id: string, message: string) {
         await this.openai.beta.threads.messages.create(id,
             {
@@ -67,18 +128,6 @@ export default class GPTHooks {
         );
     }
 
-    async transcribeAudio() {
-        try {
-            const filePath = path.join(process.env.AUDIO_DIR as string, 'output.mp3'); // נתיב לקובץ ההקלטה
-
-            const response = await this.transcriptions(filePath)
-            return response.text;
-
-        } catch (err) {
-            console.error('Error occurred during transcription:', err);
-            return 'Error in transcription';
-        }
-    }
 
     async translateText(text: string, targetLanguage: string = 'English'): Promise<string> {
         try {
@@ -114,11 +163,13 @@ export default class GPTHooks {
         }
     }
 
-    transcriptions(filePath: string) {
-        return this.openai.audio.transcriptions.create({
+    async transcriptions(filePath: string) {
+
+        const data = await this.openai.audio.transcriptions.create({
             model: 'whisper-1',
             file: fs.createReadStream(filePath), // קובץ ההקלטה בפורמט MP3
-            language: 'he' // אופציונלי: שפה (לפי הצורך)
+            language: 'en' // אופציונלי: שפה (לפי הצורך)
         });
+        return data?.text || ''
     }
 }

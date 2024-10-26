@@ -20,12 +20,14 @@ async function listenAndRecognize() {
 
         async function processRecording() {
             try {
-                const transcript = await OpenAIHooks.translateAudio();
-                console.log(transcript)
+                const transcript = await OpenAI.transcribeAudio();
+                // const transcript = await OpenAIHooks.generateAudio();
+
                 console.log('Trigger word detected! Activating ChatGPT...');
                 // await actionsStrategy.process(transcript)
                 const response = await askChatGPT(transcript) as string;
                 if (response) {
+                    // await OpenAI.speech()
                     await synthesizeSpeech(response);
                 }
                 console.log('done')
