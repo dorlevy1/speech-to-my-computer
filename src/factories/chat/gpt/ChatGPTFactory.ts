@@ -1,12 +1,12 @@
 import { ChatFactory } from "../ChatFactory";
 import { Chat } from "../interfaces/Chat";
-import ChatGPT from "../../../utils/ChatGPT";
-import OpenAIClient from "../../../utils/OpenAIClient";
+import ChatGPT from "@utils/ChatGPT";
+import OpenAIClient from "@utils/OpenAIClient";
 import GPT from "./GPT";
-import Speech from "../../speech/interfaces/Speech";
-import Stream from "../interfaces/Stream";
-import GPTStream from "./GPTStream";
-import SpeechFactory from "../../speech/SpeechFactory";
+import Speech from "@speechFactory/interfaces/Speech";
+import Stream from "@chatFactory/interfaces/Stream";
+import GPTStream from "@chatFactory/gpt/GPTStream";
+import SpeechFactory from "@speechFactory/SpeechFactory";
 
 export default class ChatGPTFactory implements ChatFactory {
 

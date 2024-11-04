@@ -1,5 +1,5 @@
-import Speech from "../../speech/interfaces/Speech";
-import PolySpeech from "../../../utils/PolySpeech";
+import Speech from "@speechFactory/interfaces/Speech";
+import PolySpeech from "@utils/PolySpeech";
 
 export default class GPTSpeech implements Speech {
 

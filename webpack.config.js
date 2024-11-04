@@ -16,6 +16,15 @@ module.exports = {
         ],
     },
     resolve: {
+        alias: {
+            '@chatFactory': path.resolve(__dirname, "./src/factories/chat"),
+            '@speechFactory': path.resolve(__dirname, "./src/factories/speech"),
+            '@factories': path.resolve(__dirname, "./src/factories"),
+            '@utils': path.resolve(__dirname, "./src/utils"),
+            '@enums': path.resolve(__dirname, "./src/enums"),
+            '@types': path.resolve(__dirname, "./src/@types"),
+            '@strategies': path.resolve(__dirname, "./src/Strategies"),
+        },
         extensions: ['.ts', '.js'], // סוגי הקבצים שהמערכת תטפל בהם
     },
     output: {
@@ -36,7 +45,7 @@ module.exports = {
                         ignore: ['**/*.ts'], // לא להעתיק קבצי TypeScript, הם כבר מומרים ל-JavaScript
                     },
                 },
-                { from: '*.html', to: '[name][ext]' }, // העתקת קבצי HTML אם הם בשורש
+                {from: '*.html', to: '[name][ext]'}, // העתקת קבצי HTML אם הם בשורש
             ],
         }),
     ],

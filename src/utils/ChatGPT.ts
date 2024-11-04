@@ -5,7 +5,7 @@ import GPTHooks from "./GPTHooks";
 import { ChatGPTGoogleCredentialsType, ChatGPTThreadType, ChatGPTTRunType } from "../@types/ChatGPT";
 import ActionsProcessor from "../Strategies/ActionsProcessor";
 import NotepadStrategy from "../Strategies/NotepadStrategy";
-import { MessageEnum } from "../enums/ChatGPT/messageEnum";
+import { MessageEnum } from "@enums/ChatGPT/messageEnum";
 import path from "node:path";
 
 export default class ChatGPT {

@@ -16,12 +16,34 @@
     ],
     "rootDir": "./",
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@chatFactory/*": [
+        "./src/factories/chat/*"
+      ],
+      "@speechFactory/*": [
+        "./src/factories/speech/*"
+      ],
+      "@factories/*": [
+        "./src/factories/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@enums/*": [
+        "./src/enums/*"
+      ],
+      "@types/*": [
+        "./src/@types/*"
+      ],
+      "@strategies/*": [
+        "./src/Strategies/*"
+      ]
+    }
   },
   "include": [
     "./src/**/*.ts",
     "./src/@types/**/*.d.ts"
-    // כולל את כל קבצי ה-d.ts שלך
   ],
   "exclude": [
     "node_modules"
