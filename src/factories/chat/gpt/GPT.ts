@@ -1,5 +1,5 @@
-import { Chat } from "./interfaces/Chat";
-import ChatGPT from "../utils/ChatGPT";
+import { Chat } from "../interfaces/Chat";
+import ChatGPT from "../../../utils/ChatGPT";
 
 
 export default class GPT implements Chat {

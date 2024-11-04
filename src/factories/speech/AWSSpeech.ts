@@ -1,12 +1,11 @@
 import Speech from "./interfaces/Speech";
-import PolySpeech from "../utils/PolySpeech";
+import PolySpeech from "../../utils/PolySpeech";
 
-export default class GPTSpeech implements Speech {
+export default class AWSSpeech implements Speech {
 
     private polySpeech: PolySpeech;
 
-    constructor(private program: string) {
-        this.program = program
+    constructor() {
         console.log('poly voice is active')
         this.polySpeech = PolySpeech.getInstance()
     }

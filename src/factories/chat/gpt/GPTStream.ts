@@ -1,5 +1,5 @@
-import Stream from "./interfaces/Stream";
-import Listener from "../utils/Listener";
+import Stream from "../interfaces/Stream";
+import Listener from "../../../utils/Listener";
 
 export default class GPTStream implements Stream {
 

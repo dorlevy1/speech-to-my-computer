@@ -1,12 +1,12 @@
-import { ChatFactory } from "./ChatFactory";
-import { Chat } from "./interfaces/Chat";
-import ChatGPT from "../utils/ChatGPT";
-import OpenAIClient from "../utils/OpenAIClient";
+import { ChatFactory } from "../ChatFactory";
+import { Chat } from "../interfaces/Chat";
+import ChatGPT from "../../../utils/ChatGPT";
+import OpenAIClient from "../../../utils/OpenAIClient";
 import GPT from "./GPT";
-import GPTSpeech from "./GPTSpeech";
-import Speech from "./interfaces/Speech";
-import Stream from "./interfaces/Stream";
+import Speech from "../../speech/interfaces/Speech";
+import Stream from "../interfaces/Stream";
 import GPTStream from "./GPTStream";
+import SpeechFactory from "../../speech/SpeechFactory";
 
 export default class ChatGPTFactory implements ChatFactory {
 
@@ -16,10 +16,9 @@ export default class ChatGPTFactory implements ChatFactory {
         return new GPT(new ChatGPT(new OpenAIClient().getOpenAI()));
     }
 
-    activeVoice(): Speech {
+    activeVoice(program: string): Speech {
         console.log('speech activated in', this.constructor.name)
-
-        return new GPTSpeech('polly');
+        return SpeechFactory.createSpeech(program)
     }
 
     activeStream(): Stream {
