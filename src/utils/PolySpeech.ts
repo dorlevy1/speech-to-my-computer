@@ -1,20 +1,27 @@
-import {PollyClient, SynthesizeSpeechCommand} from "@aws-sdk/client-polly";
+import { PollyClient, SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
 import path from "node:path";
 import fs from "fs";
-import {Readable} from "stream";
-import {exec} from "node:child_process";
-import {SpeechSynthesizeSpeechType, SpeechType, SpeechVoiceTextType} from "../@types/Speech";
+import { Readable } from "stream";
+import { ChildProcess, exec } from "node:child_process";
+import { SpeechSynthesizeSpeechType, SpeechType, SpeechVoiceTextType } from "../@types/Speech";
 
-export default class Speech {
+export default class PolySpeech {
 
     private params: SpeechType = null
     private readonly polly: PollyClient
+    static instance: PolySpeech;
+    private play: ChildProcess | null = null;
 
-    constructor() {
+    private constructor() {
         this.polly = new PollyClient({region: 'us-west-2'});
-
     }
 
+    static getInstance() {
+        if (!PolySpeech.instance) {
+            PolySpeech.instance = new PolySpeech();
+        }
+        return PolySpeech.instance;
+    }
 
     setVoiceText(text: SpeechVoiceTextType) {
         this.params = {
@@ -45,7 +52,7 @@ export default class Speech {
 
                 writableStream.on('finish', () => {
                     console.log('Response saved as response.mp3');
-                    exec(`ffplay -nodisp -autoexit "${audioFile}"`, async (err, stdout, stderr) => {
+                    this.play = exec(`ffplay -nodisp -autoexit "${ audioFile }"`, async (err, stdout, stderr) => {
                         if (err) {
                             console.error('Error playing audio with ffplay:', err);
                             return;
@@ -64,5 +71,9 @@ export default class Speech {
         } catch (err) {
             console.error('Error with Polly request:', err);
         }
+    }
+
+    stopPlaying() {
+        this.play?.kill('SIGINT')
     }
 }

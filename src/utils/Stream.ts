@@ -1,13 +1,12 @@
 import fs from "fs";
 import path from "node:path";
 import ffmpeg from "fluent-ffmpeg";
-import {unlink} from "node:fs";
+import { unlink } from "node:fs";
 
 export default class Stream {
 
     outputFileStream: fs.WriteStream | null = null;
     silenceTimeout: NodeJS.Timeout | null = null;
-    static instance: Stream
 
     createFileStream(): void {
         this.outputFileStream = fs.createWriteStream(path.join(process.env.AUDIO_DIR as string, 'output.mp3'), {flags: 'w'});
@@ -68,9 +67,9 @@ export default class Stream {
         for (const file of files) {
             unlink(file, (err) => {
                 if (err) {
-                    console.error(`Error deleting ${file}: ${err.message}`);
+                    console.error(`Error deleting ${ file }: ${ err.message }`);
                 } else {
-                    console.log(`${file} נמחק בהצלחה.`);
+                    console.log(`${ file } נמחק בהצלחה.`);
                 }
             });
         }

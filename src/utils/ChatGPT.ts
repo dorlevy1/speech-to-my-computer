@@ -2,10 +2,10 @@ import OpenAI from "openai";
 import axios from "axios";
 import puppeteer from "puppeteer";
 import GPTHooks from "./GPTHooks";
-import {ChatGPTGoogleCredentialsType, ChatGPTThreadType, ChatGPTTRunType} from "../@types/ChatGPT";
+import { ChatGPTGoogleCredentialsType, ChatGPTThreadType, ChatGPTTRunType } from "../@types/ChatGPT";
 import ActionsProcessor from "../Strategies/ActionsProcessor";
 import NotepadStrategy from "../Strategies/NotepadStrategy";
-import {MessageEnum} from "../enums/ChatGPT/messageEnum";
+import { MessageEnum } from "../enums/ChatGPT/messageEnum";
 import path from "node:path";
 
 export default class ChatGPT {
@@ -36,13 +36,12 @@ export default class ChatGPT {
         messages.data.forEach((message) => {
             if (message.role === 'assistant') {
                 if (message.content?.[0] && 'text' in message.content?.[0]) {
-                    formatted += `\n\n${message.content?.[0].text.value}\n\n`;
+                    formatted += `\n\n${ message.content?.[0].text.value }\n\n`;
                 }
             }
         });
         return formatted
     }
-
 
     getMessages() {
         return this.messages
@@ -50,27 +49,28 @@ export default class ChatGPT {
 
     async createThread() {
         if (this.thread) {
-            console.log('Thread Already Exists, Continue')
-            return;
+            console.log('Thread Already Exists, Continue Reply')
+            await this._hooks.threadReply(this.thread.id, this.messages[this.messages.length - 1])
+            return this.thread;
         }
         this.thread = await this._hooks.createThread(this.messages)
     }
 
-    async createMessageThread(message: string) {
+    async createMessageThread(message: string): Promise<void> {
         if (this.thread) {
             this.addTypeMessage(MessageEnum.USER, message)
             await this._hooks.createMessageThread(this.thread.id, message)
         }
     }
 
-    addTypeMessage(type: MessageEnum, message: string) {
+    addTypeMessage(type: MessageEnum, message: string): void {
         this.messages.push({
             role: type,
             content: message
         })
     }
 
-    async createRunThread(tools: []) {
+    async createRunThread(tools: []): Promise<void | OpenAI.Beta.Threads.Runs.Run> {
         if (this.thread && this.run) {
             console.log('Run Already exists')
             return this.run
@@ -81,7 +81,7 @@ export default class ChatGPT {
         }
     }
 
-    async checkRunThreadStatus() {
+    async checkRunThreadStatus(): Promise<void | string> {
         if (this.run) {
             switch (this.run.status) {
                 case "requires_action":
@@ -103,9 +103,12 @@ export default class ChatGPT {
         }
     }
 
-    private async handleCompletedRun() {
+    private async handleCompletedRun(): Promise<string> {
         if (!this.thread) return 'No Data'
         let messages = await this._hooks.listMessage(this.thread.id);
+        messages.data.forEach(data => {
+            console.log(data.content)
+        })
         if (messages.data[0].content && 'text' in messages.data[0].content?.[0]) {
             this.addTypeMessage(MessageEnum.ASSISTANT, messages.data[0].content?.[0].text?.value)
             return messages.data[0].content?.[0].text?.value;
@@ -113,7 +116,7 @@ export default class ChatGPT {
         return 'No Data'
     }
 
-    async requiresActions() {
+    async requiresActions(): Promise<void | string> {
         if (this.run && this.thread &&
             this.run.required_action &&
             this.run.required_action.submit_tool_outputs &&
@@ -164,7 +167,16 @@ export default class ChatGPT {
         }
     }
 
-    async getRelevantContent(websites: { title: string; link: string; }[] | string, content: string) {
+
+    async translateText(): Promise<string> {
+        const text = await this.transcribeAudio();
+        return this._hooks.translateText(text)
+    }
+
+    async getRelevantContent(websites: {
+        title: string;
+        link: string;
+    }[] | string, content: string): Promise<string | undefined> {
 
         let summary;
         if (websites && websites.length > 0) {
@@ -200,7 +212,7 @@ export default class ChatGPT {
             if (items && items.length > 0) {
                 let result = 'Here are some search results:\n';
                 items.slice(0, 3).forEach((item: any, index: number) => {
-                    result += `${index + 1}. ${item.title} - ${item.link}\n`;
+                    result += `${ index + 1 }. ${ item.title } - ${ item.link }\n`;
                 });
                 return items
             } else {
@@ -246,7 +258,7 @@ export default class ChatGPT {
                     },
                     {
                         role: "user",
-                        content: `Question: "${question}"\n\nContent: "${content}"\n\nIs this content relevant to the question? Answer with yes or no.`
+                        content: `Question: "${ question }"\n\nContent: "${ content }"\n\nIs this content relevant to the question? Answer with yes or no.`
                     },
 
                 ]
@@ -272,7 +284,7 @@ export default class ChatGPT {
                     },
                     {
                         role: "user",
-                        content: `Here is the content I found about "${question}":\n\n${content}\n\nPlease provide a detailed guide or instructions based on this content.`
+                        content: `Here is the content I found about "${ question }":\n\n${ content }\n\nPlease provide a detailed guide or instructions based on this content.`
                     },
 
                 ]
@@ -285,7 +297,7 @@ export default class ChatGPT {
         }
     }
 
-    async transcribeAudio() {
+    async transcribeAudio(): Promise<string> {
         try {
             const filePath = path.join(process.env.AUDIO_DIR as string, 'output.mp3'); // נתיב לקובץ ההקלטה
 
@@ -297,7 +309,7 @@ export default class ChatGPT {
         }
     }
 
-    async speech() {
-        return this._hooks.speech(this.messages)
+    async speech(): Promise<void> {
+        await this._hooks.speech(this.messages)
     }
 }

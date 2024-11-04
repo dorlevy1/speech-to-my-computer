@@ -1,9 +1,9 @@
 import path from "node:path";
 import fs from "fs";
 import OpenAI from "openai";
-import {MessageEnum} from "../enums/ChatGPT/messageEnum";
-import {readFileSync, writeFileSync} from "node:fs";
-import {exec} from "node:child_process";
+import { MessageEnum } from "../enums/ChatGPT/messageEnum";
+import { readFileSync, writeFileSync } from "node:fs";
+import { exec } from "node:child_process";
 
 
 export default class GPTHooks {
@@ -43,6 +43,13 @@ export default class GPTHooks {
         return this.openai.beta.threads.messages.list(id)
     }
 
+
+    async threadReply(id: string, messages: { role: MessageEnum; content: string }) {
+        return this.openai.beta.threads.messages.create(id, {
+            role: messages.role,
+            content: messages.content
+        });
+    }
 
     createThread(messages?: { role: MessageEnum; content: string }[]) {
         if (messages && messages.length > 0) {
@@ -96,7 +103,7 @@ export default class GPTHooks {
                 console.log('Response saved as response.mp3');
 
                 // Play the saved audio file using ffplay
-                exec(`ffplay -nodisp -autoexit "${audioFilePath}"`, (err) => {
+                exec(`ffplay -nodisp -autoexit "${ audioFilePath }"`, (err) => {
                     if (err) {
                         console.error('Error playing audio with ffplay:', err);
                         return;
@@ -134,7 +141,7 @@ export default class GPTHooks {
             const response = await this.completions({
                 messages: [
                     {role: 'system', content: `You are a translation assistant.`},
-                    {role: 'user', content: `Translate the following text to ${targetLanguage}: "${text}"`},
+                    {role: 'user', content: `Translate the following text to ${ targetLanguage }: "${ text }"`},
                 ]
             })
 
@@ -168,7 +175,7 @@ export default class GPTHooks {
         const data = await this.openai.audio.transcriptions.create({
             model: 'whisper-1',
             file: fs.createReadStream(filePath), // קובץ ההקלטה בפורמט MP3
-            language: 'en' // אופציונלי: שפה (לפי הצורך)
+            language: 'he' // אופציונלי: שפה (לפי הצורך)
         });
         return data?.text || ''
     }
