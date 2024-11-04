@@ -1,15 +1,11 @@
 import 'dotenv/config'
-import { ChatFactory } from "./src/factories/chat/ChatFactory";
-import ChatGPTFactory from "./src/factories/chat/gpt/ChatGPTFactory";
+import ChatGPTFactory from "@chatFactory/gpt/ChatGPTFactory";
 
 
 (() => {
-    const chatFactory: ChatFactory = new ChatGPTFactory();
-    const listener = chatFactory.activeStream()
+    const {chat, voice, stream} = new ChatGPTFactory();
 
-
-    const stream = chatFactory.activeVoice('polly')
-    stream.say('hey, this is a test')
+    voice.say('hey, this is a test')
 })()
 //
 // const listener = Listener.getInstance()

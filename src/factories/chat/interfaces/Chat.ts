@@ -1,4 +1,7 @@
 export interface Chat {
+
+    _hooks: any
+
     turnOn(): Promise<void>
 
     createMessage(message: string): Promise<void>

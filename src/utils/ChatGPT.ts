@@ -12,7 +12,7 @@ export default class ChatGPT {
 
     private thread: ChatGPTThreadType
     private run: ChatGPTTRunType
-    private readonly _hooks: GPTHooks
+    readonly _hooks: GPTHooks
     private credentials: ChatGPTGoogleCredentialsType
     private messages: { role: MessageEnum, content: string }[] = []
 

@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "fs";
 import OpenAI from "openai";
-import { MessageEnum } from "../enums/ChatGPT/messageEnum";
+import { MessageEnum } from "@enums/ChatGPT/messageEnum";
 import { readFileSync, writeFileSync } from "node:fs";
 import { exec } from "node:child_process";
 

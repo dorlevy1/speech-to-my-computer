@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack && tsc && electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node -r tsconfig-paths/register index.ts"
+    "dev": "nodemon -r tsconfig-paths/register ./src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +39,7 @@
     "axios": "^1.7.7",
     "fluent-ffmpeg": "^2.1.3",
     "mic": "^2.1.2",
+    "nodemon": "^3.1.7",
     "openai": "^4.68.1",
     "play-sound": "^1.1.6",
     "puppeteer": "^23.6.0",
