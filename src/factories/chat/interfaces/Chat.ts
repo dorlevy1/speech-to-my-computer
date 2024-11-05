@@ -1,3 +1,6 @@
+import Listener from "@utils/Listener";
+import Speech from "@speechFactory/interfaces/Speech";
+
 export interface Chat {
 
     _hooks: any
@@ -12,8 +15,12 @@ export interface Chat {
 
     translateText(): Promise<string>
 
+    process(listener: Listener, speech: Speech): Promise<void>
+
     getRelevantContent(websites: {
         title: string;
         link: string;
     }[] | string, content: string): Promise<string | undefined>
+
+    talkToChat(message: string): Promise<void | string>
 }

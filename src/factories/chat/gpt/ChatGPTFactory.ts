@@ -22,11 +22,16 @@ export default class ChatGPTFactory implements ChatFactory {
         this.chat = this.activeChat()
         this.stream = this.activeStream()
         this.voice = this.activeVoice()
+        this.processListener()
         console.log('chat factory created in', this.constructor.name)
     }
 
     activeChat(): Chat {
         return new GPT(new ChatGPT(this.openai));
+    }
+
+    processListener() {
+        this.stream.listener.setProcess(this.chat.process.bind(this.chat, this.stream.listener, this.voice))
     }
 
     activeVoice(program?: string | null): Speech {

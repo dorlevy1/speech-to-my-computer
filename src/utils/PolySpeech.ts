@@ -57,6 +57,7 @@ export default class PolySpeech {
                             console.error('Error playing audio with ffplay:', err);
                             return;
                         }
+                        this.stopPlaying();
                         console.log('Audio played successfully.');
                     });
                 });

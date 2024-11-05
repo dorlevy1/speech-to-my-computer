@@ -43,7 +43,7 @@ export default class Listener extends Stream {
     }
 
     setupKeyListeners() {
-        process.stdin.on('keypress', async (str, key) => {
+        process.stdin.on('keypress', async (_str, key) => {
             if (key.name === 's') {
                 this.startRecording(); // התחלת ההקלטה בלחיצה על המקש
             }
@@ -127,6 +127,7 @@ export default class Listener extends Stream {
             console.log('There\'s already active recording')
             return;
         }
+        console.log('asdasdasdasda')
         this.record = spawn('C:\\ffmpeg\\bin\\ffmpeg.exe', [
             '-y',  // החלפה של קבצי אודיו קיימים ללא בקשת אישור
             '-f', 'dshow',

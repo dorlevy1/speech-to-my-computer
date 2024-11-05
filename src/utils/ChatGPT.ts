@@ -61,6 +61,7 @@ export default class ChatGPT {
             this.addTypeMessage(MessageEnum.USER, message)
             await this._hooks.createMessageThread(this.thread.id, message)
         }
+
     }
 
     addTypeMessage(type: MessageEnum, message: string): void {

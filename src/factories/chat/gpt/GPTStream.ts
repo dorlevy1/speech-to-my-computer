@@ -3,7 +3,7 @@ import Listener from "../../../utils/Listener";
 
 export default class GPTStream implements Stream {
 
-    private listener: Listener
+    listener: Listener
 
     constructor() {
         console.log('stream activated in', this.constructor.name)
