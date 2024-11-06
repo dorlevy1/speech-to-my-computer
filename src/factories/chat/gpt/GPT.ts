@@ -13,7 +13,6 @@ export default class GPT implements Chat {
         this.chatgpt = chatgpt
         this._hooks = this.chatgpt._hooks
 
-        this.turnOn()
     }
 
     async turnOn(): Promise<void> {

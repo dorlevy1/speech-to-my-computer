@@ -1,27 +1,16 @@
 import Stream from "./Stream";
 import readline from 'readline';
 import ffmpeg from 'fluent-ffmpeg';
-import {ChildProcess, spawn} from "node:child_process";
+import { ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 
 ffmpeg.setFfmpegPath('C:\\ffmpeg\\bin\\ffmpeg.exe');
-
-
-readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-readline.emitKeypressEvents(process.stdin);
-
-if (process.stdin.isTTY) {
-    process.stdin.setRawMode(true);
-}
 
 export default class Listener extends Stream {
 
     static instance: Listener
     inProgress: boolean = false
     process: any = null
-    record: ChildProcess | null = null
+    record: ChildProcessWithoutNullStreams | null = null
 
 
     private constructor() {
@@ -43,6 +32,17 @@ export default class Listener extends Stream {
     }
 
     setupKeyListeners() {
+
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        readline.emitKeypressEvents(process.stdin);
+        console.log("Is TTY:", process.stdin.isTTY);
+        console.log("Has setRawMode:", typeof process.stdin.setRawMode);
+        if (process.stdin.isTTY) {
+            process.stdin.setRawMode(true);
+        }
         process.stdin.on('keypress', async (_str, key) => {
             if (key.name === 's') {
                 this.startRecording(); // התחלת ההקלטה בלחיצה על המקש
@@ -53,6 +53,7 @@ export default class Listener extends Stream {
 
             // סגירה אם לוחצים על Ctrl+C
             if (key.ctrl && key.name === 'c') {
+                rl.close()
                 process.exit();
             }
         });
@@ -70,7 +71,7 @@ export default class Listener extends Stream {
         if (this.record) {
             this.createFileStream()
             this.record.stdout?.on('data', (data) => {
-                console.log(`stdout: ${data}`);
+                console.log(`stdout: ${ data }`);
 
             });
 
@@ -94,7 +95,7 @@ export default class Listener extends Stream {
             });
 
             this.record.on('close', async (code) => {
-                console.log(`FFmpeg process exited with code ${code}`);
+                console.log(`FFmpeg process exited with code ${ code }`);
                 if (!this.inProgress) {
                     if (this.outputFileStream) {
                         this.clearAll()
