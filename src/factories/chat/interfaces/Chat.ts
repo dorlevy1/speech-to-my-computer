@@ -3,16 +3,11 @@ import Speech from "@speechFactory/interfaces/Speech";
 import { ITool } from "@chatFactory/gpt/utils/tools.helper";
 
 export interface Chat {
-
     _hooks: any
 
     turnOn(): Promise<void>
 
     createMessage(message: string): Promise<void>
-
-    createRun?(tools: ITool[]): Promise<void>
-
-    checkRunStatus?(): Promise<void>
 
     translateText(): Promise<string>
 

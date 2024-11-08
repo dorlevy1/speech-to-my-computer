@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import axios from "axios";
 import puppeteer from "puppeteer";
 import GPTHooks from "./GPTHooks";
-import { ChatGPTGoogleCredentialsType, ChatGPTThreadType, ChatGPTTRunType } from "../@types/ChatGPT";
+import { ChatGPTGoogleCredentialsType, ChatGPTThreadType, ChatGPTTRunType } from "@ctypes/ChatGPT";
 import ActionsProcessor from "../Strategies/ActionsProcessor";
 import NotepadStrategy from "../Strategies/NotepadStrategy";
 import { MessageEnum } from "@enums/ChatGPT/messageEnum";

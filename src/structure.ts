@@ -1,4 +1,4 @@
-import {AppStructure} from "./@types/appStructure";
+import {AppStructure} from "@ctypes/appStructure";
 
 const apps: AppStructure = {
     utorrent: {

@@ -1,6 +1,6 @@
 import {ActionsStrategy} from "./ActionsStrategy";
 import apps from "../structure";
-import {AppStructure} from "../@types/appStructure";
+import {AppStructure} from "@ctypes/appStructure";
 import {exec} from "node:child_process";
 import ReminderStrategy from "./ReminderStrategy";
 

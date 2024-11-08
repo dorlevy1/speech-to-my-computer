@@ -3,7 +3,7 @@ import path from "node:path";
 import fs from "fs";
 import { Readable } from "stream";
 import { ChildProcess, exec } from "node:child_process";
-import { SpeechSynthesizeSpeechType, SpeechType, SpeechVoiceTextType } from "../@types/Speech";
+import { SpeechSynthesizeSpeechType, SpeechType, SpeechVoiceTextType } from "@ctypes/Speech";
 
 export default class PolySpeech {
 

@@ -33,7 +33,7 @@
       "@enums/*": [
         "./src/enums/*"
       ],
-      "@types/*": [
+      "@ctypes/*": [
         "./src/@types/*"
       ],
       "@strategies/*": [

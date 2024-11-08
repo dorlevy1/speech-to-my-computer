@@ -1,12 +1,14 @@
 import { Chat } from "../interfaces/Chat";
-import ChatGPT from "../../../utils/ChatGPT";
+import ChatGPT from "@utils/ChatGPT";
 import GPTHooks from "@utils/GPTHooks";
 import Listener from "@utils/Listener";
 import Speech from "@speechFactory/interfaces/Speech";
 import tools, { ITool } from "@chatFactory/gpt/utils/tools.helper";
+import { ChatGPTInterface } from "@chatFactory/gpt/interfaces/ChatGPT.interface";
+import { WebsitesList } from "@ctypes/ChatGPT/websites";
 
 
-export default class GPT implements Chat {
+export default class GPT implements Chat, ChatGPTInterface {
 
     _hooks: GPTHooks
 
@@ -15,6 +17,7 @@ export default class GPT implements Chat {
         this._hooks = this.chatgpt._hooks
 
     }
+
 
     async turnOn(): Promise<void> {
         await this.chatgpt.createThread()
@@ -28,10 +31,7 @@ export default class GPT implements Chat {
         return this.chatgpt.translateText()
     }
 
-    getRelevantContent(websites: {
-        title: string;
-        link: string
-    }[] | string, content: string): Promise<string | undefined> {
+    getRelevantContent(websites: WebsitesList, content: string): Promise<string | undefined> {
         return this.chatgpt.getRelevantContent(websites, content)
     }
 
@@ -68,4 +68,9 @@ export default class GPT implements Chat {
             throw err; // זרוק את השגיאה כדי שתטופל במקום שבו נקראת הפונקציה
         }
     }
+
+    async checkRunStatus(): Promise<void> {
+
+    }
+
 }
