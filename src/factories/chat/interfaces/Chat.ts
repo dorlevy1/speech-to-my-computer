@@ -1,5 +1,6 @@
 import Listener from "@utils/Listener";
 import Speech from "@speechFactory/interfaces/Speech";
+import { ITool } from "@chatFactory/gpt/utils/tools.helper";
 
 export interface Chat {
 
@@ -9,7 +10,7 @@ export interface Chat {
 
     createMessage(message: string): Promise<void>
 
-    createRun?(tools: []): Promise<void>
+    createRun?(tools: ITool[]): Promise<void>
 
     checkRunStatus?(): Promise<void>
 

@@ -7,6 +7,8 @@ import ActionsProcessor from "../Strategies/ActionsProcessor";
 import NotepadStrategy from "../Strategies/NotepadStrategy";
 import { MessageEnum } from "@enums/ChatGPT/messageEnum";
 import path from "node:path";
+import { ITool } from "@chatFactory/gpt/utils/tools.helper";
+import { Run } from "openai/resources/beta/threads";
 
 export default class ChatGPT {
 
@@ -71,7 +73,7 @@ export default class ChatGPT {
         })
     }
 
-    async createRunThread(tools: []): Promise<void | OpenAI.Beta.Threads.Runs.Run> {
+    async createRunThread(tools: ITool[]): Promise<void | Run> {
         if (this.thread && this.run) {
             console.log('Run Already exists')
             return this.run

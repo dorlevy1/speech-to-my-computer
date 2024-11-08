@@ -3,6 +3,7 @@ import ChatGPT from "../../../utils/ChatGPT";
 import GPTHooks from "@utils/GPTHooks";
 import Listener from "@utils/Listener";
 import Speech from "@speechFactory/interfaces/Speech";
+import tools, { ITool } from "@chatFactory/gpt/utils/tools.helper";
 
 
 export default class GPT implements Chat {
@@ -34,7 +35,7 @@ export default class GPT implements Chat {
         return this.chatgpt.getRelevantContent(websites, content)
     }
 
-    async createRun(tools: []): Promise<void> {
+    async createRun(tools: ITool[]): Promise<void> {
         await this.chatgpt.createRunThread(tools)
     }
 
@@ -58,49 +59,8 @@ export default class GPT implements Chat {
 
     async talkToChat(question: string): Promise<string | void> {
         try {
-            const tools = [
-                {
-                    type: "function",
-                    function: {
-                        name: "searchGoogle",
-                        description: "Performs a search on Google using the Custom Search API. Should be called when no answer is found in the internal knowledge base, provided instructions, or uploaded files. Should only be used as a fallback mechanism when all other resources have been exhausted.",
-                        strict: true,
-                        parameters: {
-                            type: "object",
-                            required: [
-                                "query"
-                            ],
-                            properties: {
-                                query: {
-                                    type: "string",
-                                    description: "The search query string to be sent to the API"
-                                }
-                            },
-                            additionalProperties: false
-                        }
-                    }
-                }, {
-                    type: "function",
-                    function: {
-                        name: "openNotepad",
-                        description: "Opens the Notepad editor and writes provided content. Should be called whenever the user asks to open an editor or make a note.",
-                        strict: true,
-                        parameters: {
-                            type: "object",
-                            required: ["content"],
-                            properties: {
-                                content: {
-                                    type: "string",
-                                    description: "The content that should be written in Notepad"
-                                }
-                            },
-                            additionalProperties: false
-                        }
-                    }
-                }
-            ]
             await this.createMessage(question)
-            await this.createRun(tools as [])
+            await this.createRun(tools)
             return this.chatgpt.checkRunThreadStatus()
 
         } catch (err) {
