@@ -7,10 +7,11 @@ import Stream from "@chatFactory/interfaces/Stream";
 import GPTStream from "@chatFactory/gpt/GPTStream";
 import SpeechFactory from "@speechFactory/SpeechFactory";
 import OpenAI from "openai";
+import { ChatGPTInterface } from "@chatFactory/gpt/interfaces/ChatGPT.interface";
 
 export default class ChatGPTFactory implements ChatFactory {
 
-    chat: Chat;
+    chat: Chat & ChatGPTInterface;
     stream: Stream;
     voice: Speech;
     private readonly openai: OpenAI;
@@ -26,7 +27,7 @@ export default class ChatGPTFactory implements ChatFactory {
         console.log('chat factory created in', this.constructor.name)
     }
 
-    activeChat(): Chat {
+    activeChat(): Chat & ChatGPTInterface {
         return new GPT(new ChatGPT(this.openai));
     }
 

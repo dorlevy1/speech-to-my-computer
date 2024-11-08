@@ -69,8 +69,8 @@ export default class GPT implements Chat, ChatGPTInterface {
         }
     }
 
-    async checkRunStatus(): Promise<void> {
-
+    checkRunStatus(): Promise<string | void> {
+        return this.chatgpt.checkRunThreadStatus()
     }
 
 }
