@@ -6,7 +6,7 @@ export default function Logger(message?: string) {
 
         const originalMethod = descriptor.value;
         descriptor.value = function (...args: any[]) {
-            console.log(`[${ propertyKey }: ${ message }]`);
+            console.log(`[${ propertyKey }: ${ message }]`,args);
             // קריאה למתודה המקורית ושמירה על התוצאה שלה
             const result = originalMethod.apply(this, args);
             // // אם התוצאה היא הבטחה (Promise), נוסיף לוגים נוספים כשמתקבל הפלט הסופי
