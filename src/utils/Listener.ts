@@ -3,6 +3,7 @@ import readline from './readline';
 import { ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { keypress } from './stdin';
 import FfmpegConfig from "../config/ffmpeg.config";
+import Logger from "../decorators/logger.decorator";
 
 
 export default class Listener extends Stream {
@@ -31,6 +32,8 @@ export default class Listener extends Stream {
         return Listener.instance
     }
 
+
+    @Logger('Setting up key listeners...')
     setupKeyListeners() {
         keypress((key) => {
             if (key.name === 's') {
@@ -61,9 +64,7 @@ export default class Listener extends Stream {
             this.createFileStream()
             this.record.stdout?.on('data', (data) => {
                 console.log(`stdout: ${ data }`);
-
             });
-
             this.record.stderr?.on('data', (data) => {
                 const message = data.toString();
                 // חפש הודעה שמבשרת על תחילת ההקלטה
@@ -91,9 +92,6 @@ export default class Listener extends Stream {
                         await this.refreshStream(async () => {
                             this.setInProgress(true)
                             await this.process()
-                            // await this.deleteFiles([
-                            //     path.join(process.env.AUDIO_DIR as string, 'output.mp3')
-                            // ]);
                         })
                     }
                 }
@@ -101,6 +99,7 @@ export default class Listener extends Stream {
         }
     }
 
+    @Logger('Stopping recording...')
     stopRecording() {
         if (!this.isActive()) {
             console.log('There\'s no active recording at this moment.')
@@ -112,6 +111,7 @@ export default class Listener extends Stream {
     }
 
     // התחלת ההקלטה
+    @Logger('Starting recording...')
     startRecording() {
         if (this.isActive()) {
             console.log('There\'s already active recording')
@@ -129,6 +129,7 @@ export default class Listener extends Stream {
         return this.record !== null
     }
 
+    @Logger('Clearing all...')
     clearAll() {
         if (this.record) {
             this.record.stdin?.write('q');  // שליחת "q" ל-FFmpeg כדי לעצור הקלטה בצורה מסודרת
