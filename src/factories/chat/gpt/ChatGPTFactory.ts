@@ -1,6 +1,6 @@
 import { ChatFactory } from "../ChatFactory";
 import { Chat } from "../interfaces/Chat";
-import ChatGPT from "@utils/ChatGPT";
+import ChatGPT from "@chatFactory/gpt/base/ChatGPT";
 import GPT from "./GPT";
 import Speech from "@speechFactory/interfaces/Speech";
 import Stream from "@chatFactory/interfaces/Stream";

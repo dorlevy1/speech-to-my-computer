@@ -1,6 +1,6 @@
 import Speech from "./interfaces/Speech";
 import PolySpeech from "../../utils/PolySpeech";
-import GPTHooks from "@utils/GPTHooks";
+import GPTHooks from "@chatFactory/gpt/base/GPTHooks";
 
 export default class AWSSpeech implements Speech {
 

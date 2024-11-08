@@ -1,6 +1,6 @@
 import { Chat } from "../interfaces/Chat";
-import ChatGPT from "@utils/ChatGPT";
-import GPTHooks from "@utils/GPTHooks";
+import ChatGPT from "@chatFactory/gpt/base/ChatGPT";
+import GPTHooks from "@chatFactory/gpt/base/GPTHooks";
 import Listener from "@utils/Listener";
 import Speech from "@speechFactory/interfaces/Speech";
 import tools, { ITool } from "@chatFactory/gpt/utils/tools.helper";

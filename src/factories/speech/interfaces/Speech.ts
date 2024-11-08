@@ -1,6 +1,5 @@
-import { MessageEnum } from "@enums/ChatGPT/messageEnum";
+import { SpeechSayType } from "@ctypes/ChatGPT/speech";
 
-export type SpeechSayType = string | { role: MessageEnum; content: string }[];
 export default interface Speech {
 
     say(text: SpeechSayType): Promise<void>;

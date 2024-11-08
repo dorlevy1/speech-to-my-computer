@@ -1,7 +1,7 @@
 import Speech from "@speechFactory/interfaces/Speech";
 import PolySpeech from "@utils/PolySpeech";
-import GPTHooks from "@utils/GPTHooks";
-import { MessageEnum } from "@enums/ChatGPT/messageEnum";
+import GPTHooks from "@chatFactory/gpt/base/GPTHooks";
+import { SpeechMessageType } from "@ctypes/ChatGPT/speech";
 
 export default class GPTSpeech implements Speech {
 
@@ -13,7 +13,7 @@ export default class GPTSpeech implements Speech {
         this.polySpeech = PolySpeech.getInstance()
     }
 
-    async say(messages: { role: MessageEnum; content: string }[]): Promise<void> {
+    async say(messages: SpeechMessageType[]): Promise<void> {
         await this._hooks.speech(messages)
     }
 
