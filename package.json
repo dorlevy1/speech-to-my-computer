@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack && tsc && electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r tsconfig-paths/register ./src/index.ts"
+    "dev": "ts-node -r tsconfig-paths/register ./src/index.ts"
   },
   "keywords": [],
   "author": "",

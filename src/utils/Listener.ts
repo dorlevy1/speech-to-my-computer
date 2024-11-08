@@ -1,9 +1,9 @@
 import Stream from "./Stream";
-import readline from 'readline';
-import ffmpeg from 'fluent-ffmpeg';
+import readline from './readline';
 import { ChildProcessWithoutNullStreams, spawn } from "node:child_process";
+import { keypress } from './stdin';
+import FfmpegConfig from "../config/ffmpeg.config";
 
-ffmpeg.setFfmpegPath('C:\\ffmpeg\\bin\\ffmpeg.exe');
 
 export default class Listener extends Stream {
 
@@ -32,18 +32,7 @@ export default class Listener extends Stream {
     }
 
     setupKeyListeners() {
-
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-        readline.emitKeypressEvents(process.stdin);
-        console.log("Is TTY:", process.stdin.isTTY);
-        console.log("Has setRawMode:", typeof process.stdin.setRawMode);
-        if (process.stdin.isTTY) {
-            process.stdin.setRawMode(true);
-        }
-        process.stdin.on('keypress', async (_str, key) => {
+        keypress((key) => {
             if (key.name === 's') {
                 this.startRecording(); // התחלת ההקלטה בלחיצה על המקש
             }
@@ -53,10 +42,10 @@ export default class Listener extends Stream {
 
             // סגירה אם לוחצים על Ctrl+C
             if (key.ctrl && key.name === 'c') {
-                rl.close()
+                readline.close()
                 process.exit();
             }
-        });
+        })
     }
 
     setProcess(process: () => any) {
@@ -128,16 +117,7 @@ export default class Listener extends Stream {
             console.log('There\'s already active recording')
             return;
         }
-        console.log('asdasdasdasda')
-        this.record = spawn('C:\\ffmpeg\\bin\\ffmpeg.exe', [
-            '-y',  // החלפה של קבצי אודיו קיימים ללא בקשת אישור
-            '-f', 'dshow',
-            '-i', 'audio=Microphone (Realtek High Definition Audio)',  // שם המיקרופון, עדכן לפי הצורך
-            '-ac', '2',  // סטריאו
-            '-ar', '44100',  // קצב דגימה של 44.1kHz
-            '-af', 'silencedetect=noise=-50dB:d=2',  // שימוש במסנן silencedetect: סף רעש של -50dB, שקט שנמשך לפחות 2 שניות
-            'output.mp3'  // קובץ הפלט
-        ])
+        this.record = spawn(process.env.FFMPEG_PATH as string, FfmpegConfig)
 
         this.setInProgress(false);
         console.log('Recording started.');
