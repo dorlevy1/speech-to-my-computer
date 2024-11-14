@@ -50,6 +50,7 @@ export default class PolySpeech {
                 // Pipe the AudioStream to the writable stream (write audio to file)
                 (data.AudioStream as Readable).pipe(writableStream);
 
+                if (this.play) this.stopPlaying();
                 writableStream.on('finish', () => {
                     console.log('Response saved as response.mp3');
                     this.play = exec(`ffplay -nodisp -autoexit "${ audioFile }"`, async (err, stdout, stderr) => {
@@ -75,6 +76,9 @@ export default class PolySpeech {
     }
 
     stopPlaying() {
-        this.play?.kill('SIGINT')
+        if (this.play) {
+            console.log(this.play?.kill('SIGTERM'))
+            this.play?.kill('SIGTERM')
+        }
     }
 }

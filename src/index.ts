@@ -2,14 +2,17 @@ import 'dotenv/config'
 import InitializeNewChat from "@utils/InitializeNewChat";
 import ChatGPTFactory from "@chatFactory/gpt/ChatGPTFactory";
 
-
+const chatManager = InitializeNewChat.getInstance();
 (async () => {
-    const chat = await InitializeNewChat.startNewChat()
-    console.log(chat)
-
-    switch (chat) {
-        case 'GPT':
-            new ChatGPTFactory();
-            break;
+    try {
+        const chat = await chatManager.startNewChat()
+        switch (chat) {
+            case 'GPT':
+                new ChatGPTFactory();
+                break;
+        }
+    } catch (e) {
+        console.log(e)
+        await chatManager.voiceSpeak(process.env.NEW_CHAT_ERROR_QUESTION as string)
     }
 })()
